@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using MenuListModel;
 
@@ -9,9 +8,9 @@ namespace MenuListDataLayer
     {
         private readonly string _connectionString;
 
-        public MenuDataService(string connectionString)
+        public MenuDataService()
         {
-            _connectionString = connectionString;
+            _connectionString = "Server=tcp:20.189.122.105,1433; Database=VanessaRestaurant; User Id=sa; Password=Ramos.bsit21;";
         }
 
         public List<Menu> GetAllMenus()

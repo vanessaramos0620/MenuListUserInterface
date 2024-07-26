@@ -13,25 +13,30 @@ namespace MenuListUserInterface
         {
             Console.WriteLine("░W░E░L░C░O░M░E░ ░t░o░ ░V░A░N░E░S░S░A░'░S░ ░R░E░S░T░A░U░R░A░N░T░");
 
-            string connectionString = "Server=tcp:20.189.122.105,1433; Database=VanessaRestaurant; User Id=sa; Password=Ramos.bsit21;";
-            MenuDataService menuDataService = new MenuDataService(connectionString);
+            // Initialize services
+            MenuDataService menuDataService = new MenuDataService();
             MenuService menuService = new MenuService(menuDataService);
 
-            Console.WriteLine("Type 'order' to see the menu or 'admin' to manage the menu:");
-            string input = Console.ReadLine();
+            string input;
+            do
+            {
+                Console.WriteLine("\nType 'order' to see the menu or 'admin' to manage the menu:");
+                input = Console.ReadLine();
 
-            if (input.Equals("order", StringComparison.OrdinalIgnoreCase))
-            {
-                OrderMenu(menuService);
-            }
-            else if (input.Equals("admin", StringComparison.OrdinalIgnoreCase))
-            {
-                ManageMenu(menuService);
-            }
-            else
-            {
-                Console.WriteLine("Invalid input.");
-            }
+                if (input.Equals("order", StringComparison.OrdinalIgnoreCase))
+                {
+                    OrderMenu(menuService);
+                }
+                else if (input.Equals("admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    ManageMenu(menuService);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please type 'order' or 'admin'.");
+                }
+
+            } while (!input.Equals("exit", StringComparison.OrdinalIgnoreCase));
         }
 
         static void OrderMenu(MenuService menuService)
@@ -95,7 +100,7 @@ namespace MenuListUserInterface
 
         static void ViewMenu(MenuService menuService)
         {
-            List<Menu> menus = menuService.GetAllMenus(); 
+            List<Menu> menus = menuService.GetAllMenus();
             DisplayMenu(menus);
         }
 
@@ -207,7 +212,7 @@ namespace MenuListUserInterface
                 foreach (var menu in group)
                 {
                     int spacing = 30 - menu.Item.Length;
-                    Console.WriteLine($"{menu.Item}{new string(' ', spacing)}{menu.Price:C2}"); 
+                    Console.WriteLine($"{menu.Item}{new string(' ', spacing)}{menu.Price:C2}"); // Format price as currency
                 }
             }
         }
@@ -216,74 +221,89 @@ namespace MenuListUserInterface
         {
             List<string> orders = new List<string>();
             Console.WriteLine("\nEnter the items you want to order (type 'done' to finish):");
-            while (true)
-            {
-                string order = Console.ReadLine();
-                if (order.Equals("done", StringComparison.OrdinalIgnoreCase)) break;
+            string input;
 
-                if (menus.Any(m => m.Item.Equals(order, StringComparison.OrdinalIgnoreCase)))
-                {
-                    orders.Add(order);
-                    Console.WriteLine("Item added to order.");
-                }
-                else
-                {
-                    Console.WriteLine("Item not found in menu.");
-                } 
-            }
-            return orders;
-        }
-        
-        static void ManageOrders(List<string> orders, List<Menu> menus)
-        {
-            
-            Console.WriteLine("\nDo you want to update any item in your order? (yes/no)");
-            if (Console.ReadLine().Equals("yes", StringComparison.OrdinalIgnoreCase))
+            do
             {
-                Console.WriteLine("Enter the item you want to update:");
-                string oldItem = Console.ReadLine();
-                if (orders.Contains(oldItem))
+                input = Console.ReadLine();
+                if (!input.Equals("done", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine("Enter the new item:");
-                    string newItem = Console.ReadLine();
-                    if (menus.Any(m => m.Item.Equals(newItem, StringComparison.OrdinalIgnoreCase)))
+                    if (menus.Any(m => m.Item.Equals(input, StringComparison.OrdinalIgnoreCase)))
                     {
-                        int index = orders.IndexOf(oldItem);
-                        orders[index] = newItem;
-                        Console.WriteLine("Order updated.");
+                        orders.Add(input);
                     }
                     else
                     {
-                        Console.WriteLine("New item not found in menu.");
+                        Console.WriteLine("Item not found in menu. Please try again.");
                     }
                 }
-                else
+            } while (!input.Equals("done", StringComparison.OrdinalIgnoreCase));
+
+            return orders;
+        }
+
+        static void ManageOrders(List<string> orders, List<Menu> menus)
+        {
+            string input;
+            Console.WriteLine("\nYour Current Order:");
+            foreach (var order in orders)
+            {
+                Console.WriteLine(order);
+            }
+
+            Console.WriteLine("\nWould you like to add more items to your order? (yes/no)");
+            if (Console.ReadLine().Equals("yes", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine("Please enter additional orders (type 'done' to finish):");
+                do
                 {
-                    Console.WriteLine("Item not found in your order.");
+                    input = Console.ReadLine();
+                    if (!input.Equals("done", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (menus.Any(m => m.Item.Equals(input, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            orders.Add(input);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Item not found in menu. Please try again.");
+                        }
+                    }
+                } while (!input.Equals("done", StringComparison.OrdinalIgnoreCase));
+
+                Console.WriteLine("\nYour Updated Order:");
+                foreach (var order in orders)
+                {
+                    Console.WriteLine(order);
                 }
             }
 
-            Console.WriteLine("Do you want to delete any item from your order? (yes/no)");
+            Console.WriteLine("\nWould you like to remove any items from your order? (yes/no)");
             if (Console.ReadLine().Equals("yes", StringComparison.OrdinalIgnoreCase))
             {
-                Console.WriteLine("Enter the item you want to delete:");
-                string itemToDelete = Console.ReadLine();
-                if (orders.Contains(itemToDelete))
+                Console.WriteLine("Enter the items you want to remove (type 'done' when finished):");
+                do
                 {
-                    orders.Remove(itemToDelete);
-                    Console.WriteLine("Item deleted from order.");
-                }
-                else
-                {
-                    Console.WriteLine("Item not found in your order.");
-                }
+                    input = Console.ReadLine();
+                    if (!input.Equals("done", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (orders.Contains(input))
+                        {
+                            orders.Remove(input);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Item not found in your order. Please try again.");
+                        }
+                    }
+                } while (!input.Equals("done", StringComparison.OrdinalIgnoreCase));
             }
         }
 
         static void DisplayFinalOrder(List<string> orders)
         {
-            Console.WriteLine("\nYour final order:");
-            foreach (string order in orders)
+            Console.WriteLine("\nYour Final Order:");
+            foreach (var order in orders)
             {
                 Console.WriteLine(order);
             }
