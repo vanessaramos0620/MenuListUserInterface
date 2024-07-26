@@ -22,10 +22,10 @@ namespace MenuListApi.Controllers
             return _menuService.GetAllMenus();
         }
 
-        [HttpGet("{order}")]
-        public ActionResult<Menu> GetMenu(string order)
+        [HttpGet("{item}")]
+        public ActionResult<Menu> GetMenu(string item)
         {
-            var menu = _menuService.GetMenu(order);
+            var menu = _menuService.GetMenu(item);
             if (menu == null)
             {
                 return NotFound();
@@ -36,22 +36,28 @@ namespace MenuListApi.Controllers
         [HttpPost]
         public IActionResult PostMenu(Menu menu)
         {
-         
-            return Ok();
+            _menuService.AddMenu(menu);
+            return CreatedAtAction(nameof(GetMenu), new { item = menu.Item }, menu);
         }
 
-        [HttpPatch("{order}")]
-        public IActionResult UpdateMenu(string order, Menu updatedMenu)
+        [HttpPatch("{item}")]
+        public IActionResult UpdateMenu(string item, Menu updatedMenu)
         {
-          
-            return Ok();
+            if (_menuService.UpdateMenu(item, updatedMenu))
+            {
+                return NoContent();
+            }
+            return NotFound();
         }
 
-        [HttpDelete("{order}")]
-        public IActionResult DeleteMenu(string order)
+        [HttpDelete("{item}")]
+        public IActionResult DeleteMenu(string item)
         {
-         
-            return Ok();
+            if (_menuService.DeleteMenu(item))
+            {
+                return NoContent();
+            }
+            return NotFound();
         }
     }
 }

@@ -15,12 +15,27 @@ namespace MenuListBusinessLogic
 
         public List<Menu> GetAllMenus()
         {
-            return _menuDataService.GetMenus();
+            return _menuDataService.GetAllMenus();
         }
 
-        public Menu GetMenu(string order)
+        public Menu GetMenu(string item)
         {
-            return _menuDataService.GetMenu(order);
+            return _menuDataService.GetMenu(item);
+        }
+
+        public void AddMenu(Menu menu)
+        {
+            _menuDataService.AddMenu(menu);
+        }
+
+        public bool UpdateMenu(string item, Menu updatedMenu)
+        {
+            return _menuDataService.UpdateMenu(item, updatedMenu);
+        }
+
+        public bool DeleteMenu(string item)
+        {
+            return _menuDataService.DeleteMenu(item);
         }
     }
 }
