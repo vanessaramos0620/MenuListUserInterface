@@ -13,7 +13,6 @@ namespace MenuListUserInterface
         {
             Console.WriteLine("░W░E░L░C░O░M░E░ ░t░o░ ░V░A░N░E░S░S░A░'░S░ ░R░E░S░T░A░U░R░A░N░T░");
 
-            // Initialize services
             MenuDataService menuDataService = new MenuDataService();
             MenuService menuService = new MenuService(menuDataService);
 
@@ -212,7 +211,7 @@ namespace MenuListUserInterface
                 foreach (var menu in group)
                 {
                     int spacing = 30 - menu.Item.Length;
-                    Console.WriteLine($"{menu.Item}{new string(' ', spacing)}{menu.Price:C2}"); // Format price as currency
+                    Console.WriteLine($"{menu.Item}{new string(' ', spacing)}{menu.Price:C2}"); 
                 }
             }
         }
